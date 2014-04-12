@@ -17,18 +17,14 @@ function arrToObj(arr){
 }
 
 app.set("port",config.port);
-app.set("supportedExtensions", arrToObj(config.getSupportedExtensions()));
-app.set("fileExtensions", arrToObj(config.fileExtensions));
 app.set("movieExtensions", arrToObj(config.movieExtensions));
 app.set("movieDir", deployDir + config.movieDir);
-app.set("fileDir", deployDir + config.fileDir);
 app.set("encodeDir", deployDir + config.encodeDir);
 app.set("uploadDir", deployDir + 'uploads');
 
 var 
     port = app.get("port") || 8080,
     video = require('./routes/videos')(app),
-    file = require('./routes/file_routes')(app),
     upload = require('./routes/upload')(app),
     encoder = require('./routes/encode')(app,upload),
     setup = require('./routes/setup')(app),
@@ -46,14 +42,11 @@ app.use(express.static(deployDir));
 app.get('/', function (req, res, next) {
     video.getMovies(function(videos) {
         encoder.getProcessing(function(processing) {
-            file.getFiles(function(foundFiles) {
-                var out = {
-                    "videos":videos.slice(0,10),
-                    "files":foundFiles.files.slice(0,10),
-                    "processing":processing
-                };
+            var out = {
+                "videos":videos.slice(0,10),
+                "processing":processing
+            };
             res.render("index",out);
-            })
         })
     })
 });
