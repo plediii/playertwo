@@ -4,7 +4,7 @@
 var 
   progress = require('progress'),
   util = require('util'),
-  encoder = require('./routes/encode')(),
+  encoder = require('./lib/encoder')(),
   fs = require('fs'),
   path = require('path'),
   argv = require('minimist')(process.argv.slice(2));

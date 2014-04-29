@@ -6,56 +6,22 @@ var
   util = require('util'),
   path = require("path"),
   fs = require("fs"),
-  Encoder = require(__dirname + '/../lib/encoder').Encoder;
+  Encoder = require(__dirname + '/../lib/encoder').Encoder,
+  EventEmitter = require('events').EventEmitter;
+
 
 module.exports = function(app, upload) {
-  var // App level variables
+    var // App level variables
     encodeDir = "./build/encode",
     videoDir = "./build/videos",
     videoDir = "./build/upload",
     encoder = new Encoder();
-    PATHSEP = path.sep;
+    PATHSEP = path.sep,
+    events = new EventEmitter();
 
-  var serverConfig = function(app, upload) {
-    upload.on("end", uploadFinished);
-    setupRoutes(app);
-  }
-
-  var setupRoutes = function(app) {
-    app.get("/encode/status/:filename", function(req, res, next) {
-    
-      if(!req.params.filename) { // Either video was finished encoding or never existed
-        res.send(400);
-        return;
-      }
-
-      var filename = req.params.filename;
-
-      if(!encodeQueue[req.params.filename]) {
-        res.send(404);
-      } else {
-        res.json(encodeQueue[filename])
-      }
-    });
-
-    app.get('/encode', function(req, res, next) {
-      console.log("GET: encode");
-      getProcessing(function(videoList) {
-        res.render("encode",{"processing":videoList});
-      });
-    });
-
-    app.get('/get/processing', function(req, res, next) {
-      console.log("GET processing videos JSON list");
-      getProcessing(function(videoList) {
-        res.json(videoList)
-      });
-    });  
-  }
-
-    var uploadFinished = function(fileInfo) {
+    var startEncode = function(fileInfo) {
         var inputName = uploadDir + '/' + fileInfo.name
-        encoder.encode(inputName, './build/encode')
+        var encoding = encoder.encode(inputName, './build/encode')
             .on('error', function (err) {
                 console.log('Error while encoding: ', err);
             })
@@ -75,56 +41,78 @@ module.exports = function(app, upload) {
                             console.log('Error unlinking ', vid.input, err);
                             return;
                         }
+                        events.emit('encodingComplete', encoding.vid);
                     });
                 });
             });
+        events.emit('encodingStart', encoding.vid);
     };
 
-  /*
-    Get a list of the videos currently being encoded
-  */
-  var getProcessing = function(cb) {
-    var videoList = [];
-    
-    //Recursively get all files in dir
-    dirExp.files(encodeDir, function(err,files) { if(err) console.log(err);
-      console.log("getProcessing: " + util.inspect(files));
+    upload.on('end', startEncode);
 
-      if(!files)
-          return cb(videoList);
+    app.get("/encode/status/:filename", function(req, res, next) {
+        
+        if(!req.params.filename) { // Either video was finished encoding or never existed
+            res.send(400);
+            return;
+        }
 
-      //Per video, construct a useful video object
-      files.forEach(function(val,i,arr){
-        var 
-          filename = val.substr(val.lastIndexOf(PATHSEP)+1),
-          name = filename.substr(0,filename.lastIndexOf("."));
-        videoList.push({
-          "name": name,
-          "filename": filename
-        });
-      });
-      
-      console.log("videoList: \n\t" + util.inspect(videoList));
-      
-      return cb(videoList);
+        var filename = req.params.filename;
+
+        if(!encoder.encodeStates[req.params.filename]) {
+            res.send(404);
+        } else {
+            res.json(encoder.encodeStates[filename])
+        }
     });
-  }
 
-  if(arguments.length == 2) {
-    serverConfig(app, upload);
-    return {"getProcessing": getProcessing};
-  } else {
-    // cli init
-    console.log('console init');
-    var encodeVid = function(file, out) {
-      fileEncodeOptions.input = file;
-      fileEncodeOptions.output = out;
+    app.get('/encode', function(req, res, next) {
+        console.log("GET: encode");
+        getProcessing(function(videoList) {
+            res.render("encode",{"processing":videoList});
+        });
+    });
 
-      return handbrake.spawn(fileEncodeOptions)
-    }
+    app.get('/get/processing', function(req, res, next) {
+        console.log("GET processing videos JSON list");
+        getProcessing(function(videoList) {
+            res.json(videoList)
+        });
+    });  
+
+    /*
+      Get a list of the videos currently being encoded
+    */
+    var getProcessing = function(cb) {
+        var videoList = [];
+        
+        //Recursively get all files in dir
+        dirExp.files(encodeDir, function(err,files) { 
+            if(err) console.log(err);
+            console.log("getProcessing: " + util.inspect(files));
+
+            if(!files)
+                return cb(videoList);
+
+            //Per video, construct a useful video object
+            files.forEach(function(val,i,arr){
+                var 
+                filename = val.substr(val.lastIndexOf(PATHSEP)+1),
+                name = filename.substr(0,filename.lastIndexOf("."));
+                videoList.push({
+                    "name": name,
+                    "filename": filename
+                });
+            });
+            
+            console.log("videoList: \n\t" + util.inspect(videoList));
+            
+            return cb(videoList);
+        });
+    };
 
     return {
-      encode:encodeVid
+        getProcessing: getProcessing,
+        events: events
     };
-  }
-}
+};
