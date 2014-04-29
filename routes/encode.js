@@ -6,7 +6,7 @@ var
   util = require('util'),
   path = require("path"),
   fs = require("fs"),
-  Encoder = require(__dirname + '/../lib/encoder').Encoder,
+  Encoder = require(__dirname + '/../lib/encoder'),
   EventEmitter = require('events').EventEmitter;
 
 
@@ -15,7 +15,7 @@ module.exports = function(app, upload) {
     encodeDir = "./build/encode",
     videoDir = "./build/videos",
     videoDir = "./build/upload",
-    encoder = new Encoder();
+    encoder = new Encoder(),
     PATHSEP = path.sep,
     events = new EventEmitter();
 
