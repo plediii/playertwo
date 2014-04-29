@@ -14,12 +14,14 @@ module.exports = function(app, upload) {
     var // App level variables
     encodeDir = "./build/encode",
     videoDir = "./build/videos",
-    videoDir = "./build/upload",
+    uploadDir = "./build/uploads",
     encoder = new Encoder(),
     PATHSEP = path.sep,
-    events = new EventEmitter();
+    events = new EventEmitter(),
+    movieExt = 'mp4';
 
     var startEncode = function(fileInfo) {
+        console.log('start encode ', fileInfo);
         var inputName = uploadDir + '/' + fileInfo.name
         var encoding = encoder.encode(inputName, './build/encode')
             .on('error', function (err) {

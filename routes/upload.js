@@ -9,6 +9,8 @@ module.exports = function(app) {
     subExt = "vtt",
     fileDir = app.get("fileDir"),
     uploadDir = app.get('uploadDir');
+
+    console.log('uploaddir = ', uploadDir);
   
   upload.configure({
     tmpDir: os.tmpDir(),
@@ -26,12 +28,11 @@ module.exports = function(app) {
         }
       });
 
-    if(extension != subExt) {
-      fm.move(fileinfo.name, "./../../" + fileDir, function(err){ 
-        if(err)
-          console.log(err);
-      });
-    }
+    // if(extension != subExt) {
+    //   fm.move(fileinfo.name, "./../../" + fileDir, function(err){ 
+    //     if(err)
+    //       console.log(err);
+    //   });
   };
 
   app.use("/upload", upload.fileHandler());
