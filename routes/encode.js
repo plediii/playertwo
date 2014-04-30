@@ -32,7 +32,10 @@ module.exports = function(app, upload) {
 
             })
             .on('complete', function (vid) {
-                var endName = videoDir + "/" + fileInfo.name + '.' + movieExt;
+                var fileName = fileInfo.name;
+                var lastDot = fileName.lastIndexOf('.');
+                var withoutExt = (lastDot > 0) ? fileName.substr(0, lastDot) : fileName
+                var endName = videoDir + "/" + withoutExt + '.' + movieExt;
                 fs.rename(vid.output, endName, function(err) {
                     if (err) {
                         console.log('Error renameing ', err);
