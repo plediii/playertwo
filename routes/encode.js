@@ -31,7 +31,7 @@ module.exports = function(app, upload) {
 
             })
             .on('complete', function (vid) {
-                var endName = videoDir + "/" + fileInfo.name + movieExt;
+                var endName = videoDir + "/" + fileInfo.name + '.' + movieExt;
                 fs.rename(vid.output, endName, function(err) {
                     if (err) {
                         console.log('Error renameing ', err);
