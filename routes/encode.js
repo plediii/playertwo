@@ -65,10 +65,10 @@ module.exports = function(app, upload) {
 
         var filename = req.params.filename;
 
-        if(!encoder.encodeStates[req.params.filename]) {
+        if(!encoder.encodeStates.hasOwnProperty(filename)) {
             res.send(404);
         } else {
-            res.json(encoder.encodeStates[filename])
+            res.json(encoder.encodeStates[filename].progress)
         }
     });
 
