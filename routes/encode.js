@@ -7,7 +7,8 @@ var
   path = require("path"),
   fs = require("fs"),
   Encoder = require(__dirname + '/../lib/encoder'),
-  EventEmitter = require('events').EventEmitter;
+  EventEmitter = require('events').EventEmitter,
+  _ = require('underscore');
 
 
 module.exports = function(app, upload) {
