@@ -22,11 +22,8 @@ module.exports = function(app) {
     var 
       filename = fileinfo.name,
       extension = fileinfo.extension = filename.substr(filename.lastIndexOf(".")+1),
-      fm = upload.fileManager({ //We do this here because we're recylcing this in encode.js
-        uploadDir: function() {
-          return uploadDir;
-        }
-      });
+      fm = upload.fileManager(),
+      filepath = fileinfo.path = path.join(uploadDir, filename);
 
     // if(extension != subExt) {
     //   fm.move(fileinfo.name, "./../../" + fileDir, function(err){ 
