@@ -26,9 +26,16 @@ var
     port = app.get("port") || 8080,
     video = require('./routes/videos')(app),
     upload = require('./routes/upload')(app),
-    encoder = require('./routes/encode')(app,upload),
+    encoder = require('./lib/encoder')()
+    encode = require('./routes/encode')(app,encoder),
     setup = require('./routes/setup')(app),
     os = require("os");
+
+
+
+// processing pipeline
+
+upload.on('end', encode.startEncode);
 
 app.set('view engine', 'jade');
 app.set('views', deployDir + 'views');
@@ -66,3 +73,4 @@ app.get('/dl/*/*', function(req, res){
 
 app.listen(port);
 console.log('Get to app at http://' + os.hostname() + ":" + port);
+

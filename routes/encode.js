@@ -6,25 +6,21 @@ var
   util = require('util'),
   path = require("path"),
   fs = require("fs"),
-  Encoder = require(__dirname + '/../lib/encoder'),
   EventEmitter = require('events').EventEmitter,
   _ = require('underscore');
 
 
-module.exports = function(app, upload) {
+module.exports = function(app, encoder) {
     var // App level variables
     encodeDir = "./build/encode",
     videoDir = "./build/videos",
-    uploadDir = "./build/uploads",
-    encoder = new Encoder(),
     PATHSEP = path.sep,
     events = new EventEmitter(),
     movieExt = 'mp4';
 
     var startEncode = function(fileInfo) {
         console.log('start encode ', fileInfo);
-        var inputName = uploadDir + '/' + fileInfo.name
-        var encoding = encoder.encode(inputName, './build/encode')
+        var encoding = encoder.encode(fileinfo.path, './build/encode')
             .on('error', function (err) {
                 console.log('Error while encoding: ', err);
             })
@@ -47,14 +43,11 @@ module.exports = function(app, upload) {
                             console.log('Error unlinking ', vid.input, err);
                             return;
                         }
-                        events.emit('encodingComplete', encoding.vid);
                     });
                 });
             });
-        events.emit('encodingStart', encoding.vid);
     };
 
-    upload.on('end', startEncode);
 
     app.get("/encode/status/:filename", function(req, res, next) {
         
@@ -102,6 +95,7 @@ module.exports = function(app, upload) {
 
     return {
         getProcessing: getProcessing,
-        events: events
+        events: events,
+        startEncode: startEncode
     };
 };

@@ -2,7 +2,8 @@
 var 
   upload = require('jquery-file-upload-middleware'),
   fs = require('fs'),
-  os = require('os');
+  os = require('os'),
+  path = require('path');
 
 module.exports = function(app) {
   var 
