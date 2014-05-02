@@ -5,7 +5,7 @@ var
   os = require('os'),
   path = require('path');
 
-module.exports = function(app) {
+module.exports = function(app, appEvents) {
   var 
     subExt = "vtt",
     fileDir = app.get("fileDir"),
@@ -24,13 +24,17 @@ module.exports = function(app) {
       filename = fileinfo.name,
       extension = fileinfo.extension = filename.substr(filename.lastIndexOf(".")+1),
       fm = upload.fileManager(),
-      filepath = fileinfo.path = path.join(uploadDir, filename);
+      fileinfo.path = path.join(uploadDir, filename);
 
     // if(extension != subExt) {
     //   fm.move(fileinfo.name, "./../../" + fileDir, function(err){ 
     //     if(err)
     //       console.log(err);
     //   });
+
+      appEvents.emit('startEncoding', {
+          sourceInfo: fileinfo
+      })
   };
 
   app.use("/upload", upload.fileHandler());

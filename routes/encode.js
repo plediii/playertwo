@@ -10,24 +10,24 @@ var
   _ = require('underscore');
 
 
-module.exports = function(app, encoder) {
+module.exports = function(app, appEvents, encoder) {
     var // App level variables
     encodeDir = "./build/encode",
     videoDir = "./build/videos",
     PATHSEP = path.sep,
-    events = new EventEmitter(),
     movieExt = 'mp4';
 
-    var startEncode = function(fileInfo) {
+    var startEncode = function(vid) {
+        var fileInfo = vid.fileInfo
         console.log('start encode ', fileInfo);
         var encoding = encoder.encode(fileinfo.path, './build/encode')
             .on('error', function (err) {
                 console.log('Error while encoding: ', err);
             })
-            .on('progress', function (vid) {
-
+            .on('start', function (encodeState) {
+                vid.encodeState = encodeState;
             })
-            .on('complete', function (vid) {
+            .on('complete', function (encodeState) {
                 var fileName = fileInfo.name;
                 var lastDot = fileName.lastIndexOf('.');
                 var withoutExt = (lastDot > 0) ? fileName.substr(0, lastDot) : fileName
@@ -43,10 +43,13 @@ module.exports = function(app, encoder) {
                             console.log('Error unlinking ', vid.input, err);
                             return;
                         }
+                        appEvents.emit('available', vid);
                     });
                 });
             });
     };
+
+    appEvents.on('startEncoding', startEncode);
 
 
     app.get("/encode/status/:filename", function(req, res, next) {
@@ -95,7 +98,6 @@ module.exports = function(app, encoder) {
 
     return {
         getProcessing: getProcessing,
-        events: events,
         startEncode: startEncode
     };
 };

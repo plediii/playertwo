@@ -5,7 +5,9 @@ var
     app = express(),
     fs = require('fs'),
     deployDir = "./build/",
-    config = require(deployDir + "config.js");
+    config = require(deployDir + "config.js"),
+    EventEmitter = require('events').EventEmitter,
+    appEvents = new EventEmitter();
 
 function arrToObj(arr){
     var a = {};
@@ -25,17 +27,11 @@ app.set("uploadDir", deployDir + 'uploads');
 var 
     port = app.get("port") || 8080,
     video = require('./routes/videos')(app),
-    upload = require('./routes/upload')(app),
+    upload = require('./routes/upload')(app, appEvents),
     encoder = require('./lib/encoder')(),
-    encode = require('./routes/encode')(app,encoder),
+    encode = require('./routes/encode')(app, appEvents, encoder),
     setup = require('./routes/setup')(app),
     os = require("os");
-
-
-
-// processing pipeline
-
-upload.on('end', encode.startEncode);
 
 app.set('view engine', 'jade');
 app.set('views', deployDir + 'views');
