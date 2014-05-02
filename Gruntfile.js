@@ -101,7 +101,7 @@ module.exports = function(grunt) {
     grunt.registerTask('lint', ['jshint']);
     grunt.registerTask('compile', ['less','coffee']);
     grunt.registerTask('build', [ 'clean', 'copy:deps','browserify','copy:assets','mkdir:assets','compile']);
-    grunt.registerTask('default', [ 'build' ]);
+    grunt.registerTask('default', [ 'lint', 'build' ]);
     grunt.registerTask('serve', [ 'server' ]);
 
 };
