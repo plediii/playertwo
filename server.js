@@ -26,7 +26,7 @@ var
     port = app.get("port") || 8080,
     video = require('./routes/videos')(app),
     upload = require('./routes/upload')(app),
-    encoder = require('./lib/encoder')()
+    encoder = require('./lib/encoder')(),
     encode = require('./routes/encode')(app,encoder),
     setup = require('./routes/setup')(app),
     os = require("os");
