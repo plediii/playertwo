@@ -79,12 +79,27 @@ module.exports = function(grunt) {
                 src: ['src/bin/js/app.js'],
                 dest: 'src/bin/js/vendor.js'
             }
+        },
+        jshint: {
+            options: {
+                strict: true,
+                globals: { 'require': false , 
+                             'describe': false,
+                             'it': false, 
+                             'exports': false,
+                             'before': false,
+                             'console': false,
+                             'module': false
+                         }
+            },
+            all: [ '*.js', 'lib/*.js', 'routes/*.js']
         }
     });
 
     require('matchdep').filter('grunt-*').forEach(grunt.loadNpmTasks);
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
+    grunt.registerTask('lint', ['jshint']);
     grunt.registerTask('compile', ['less','coffee']);
     grunt.registerTask('build', [ 'clean', 'copy:deps','browserify','copy:assets','mkdir:assets','compile']);
     grunt.registerTask('default', [ 'build' ]);
