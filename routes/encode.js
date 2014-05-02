@@ -18,7 +18,7 @@ module.exports = function(app, appEvents, encoder) {
     movieExt = 'mp4';
 
     var startEncode = function(vid) {
-        var fileInfo = vid.fileInfo
+        var fileInfo = vid.sourceInfo;
         console.log('start encode ', fileInfo);
         var encoding = encoder.encode(fileInfo.path, './build/encode')
             .on('error', function (err) {
