@@ -23,7 +23,8 @@ module.exports = function(app, appEvents) {
     var 
       filename = fileinfo.name,
       extension = fileinfo.extension = filename.substr(filename.lastIndexOf(".")+1),
-      fm = upload.fileManager(),
+      fm = upload.fileManager();
+
       fileinfo.path = path.join(uploadDir, filename);
 
     // if(extension != subExt) {
@@ -34,7 +35,7 @@ module.exports = function(app, appEvents) {
 
       appEvents.emit('startEncoding', {
           sourceInfo: fileinfo
-      })
+      });
   };
 
   app.use("/upload", upload.fileHandler());
