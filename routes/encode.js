@@ -38,12 +38,14 @@ module.exports = function(app, appEvents, encoder) {
                         return;
                     }
 
+                    vid.videopath = endName
+                    appEvents.emit('available', vid);
+
                     fs.unlink(vid.input, function(err){
                         if (err) {
                             console.log('Error unlinking ', vid.input, err);
                             return;
                         }
-                        appEvents.emit('available', vid);
                     });
                 });
             });
