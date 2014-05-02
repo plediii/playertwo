@@ -20,7 +20,7 @@ module.exports = function(app, appEvents, encoder) {
     var startEncode = function(vid) {
         var fileInfo = vid.fileInfo
         console.log('start encode ', fileInfo);
-        var encoding = encoder.encode(fileinfo.path, './build/encode')
+        var encoding = encoder.encode(fileInfo.path, './build/encode')
             .on('error', function (err) {
                 console.log('Error while encoding: ', err);
             })
