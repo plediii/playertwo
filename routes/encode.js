@@ -12,7 +12,6 @@ var
 
 module.exports = function(app, appEvents, encoder) {
     var // App level variables
-    encodeDir = "./build/encode",
     videoDir = "./build/videos",
     PATHSEP = path.sep,
     movieExt = 'mp4';
@@ -20,7 +19,7 @@ module.exports = function(app, appEvents, encoder) {
     var startEncode = function(vid) {
         var fileInfo = vid.sourceInfo;
         console.log('start encode ', fileInfo);
-        var encoding = encoder.encode(fileInfo.path, './build/encode')
+        var encoding = encoder.encode(fileInfo.path, app.get('encodeDir'))
             .on('error', function (err) {
                 console.log('Error while encoding: ', err);
             })
