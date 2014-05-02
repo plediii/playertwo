@@ -31,7 +31,7 @@ module.exports = function(app, appEvents, encoder) {
                 var lastDot = fileName.lastIndexOf('.');
                 var withoutExt = (lastDot > 0) ? fileName.substr(0, lastDot) : fileName
                 var endName = videoDir + "/" + withoutExt + '.' + movieExt;
-                fs.rename(vid.output, endName, function(err) {
+                fs.rename(encodeState.output, endName, function(err) {
                     if (err) {
                         console.log('Error renameing ', err);
                         return;
