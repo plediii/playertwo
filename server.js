@@ -16,7 +16,7 @@ app.set("port",config.port);
 app.set("movieExtensions",new sets.Set(config.movieExtensions));
 app.set("movieDir", deployDir + config.movieDir);
 app.set("encodeDir", deployDir + config.encodeDir);
-app.set("uploadDir", deployDir + 'uploads');
+app.set("uploadDir", '/tmp/playertwo/');
 
 var 
   port = app.get("port") || 8080,
