@@ -51,7 +51,7 @@ app.get('/', function (req, res, next) {
 });
 
 upload.on("end",function(fileInfo){
-  var uploadedFile = path.normalize("./build/uploads/"+fileInfo.name);
+  var uploadedFile = path.normalize(app.get('uploaddir')+fileInfo.name);
   if(fileInfo.deleteUrl.match(uploadConf.uploadUrl + "-api"))
     console.log("File uploaded via api do nothing, other app logic will handle")
   else {
